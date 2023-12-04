@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "30086050026",
+    "project_id": "test-triumph",
+    "storage_bucket": "test-triumph.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:30086050026:android:50687411557c05f862a793",
+        "android_client_info": {
+          "package_name": "com.example.testtriumph"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "30086050026-dan4785aquosb3j76t0jo5vnmo0v6cpk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.testtriumph",
+            "certificate_hash": "df7bc9262121c815f9d930fa93b17bf4d19fa7f2"
+          }
+        },
+        {
+          "client_id": "30086050026-epn3r46s7dauo6kv7mivlqcojsb9sut8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDM599RUrojN4NNORoUdv1nB5Bu9HZ8Rm0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "30086050026-epn3r46s7dauo6kv7mivlqcojsb9sut8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
