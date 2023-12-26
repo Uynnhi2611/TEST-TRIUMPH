@@ -520,6 +520,7 @@ public class DbQuery {
                                     documentSnapshot.getLong("TEST" + String.valueOf(i) + "_TIME").intValue()
                             ));
                         }
+
                         completeListener.onSuccess();
                     }
                 })
@@ -600,7 +601,6 @@ public class DbQuery {
             }
         });
     }
-
     public static void createCategory(CategoryModel newCategory, MyCompleteListener completeListener) {
         // Lấy ID của người dùng hiện tại
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -671,7 +671,7 @@ public class DbQuery {
                     }
                 });
     }
- /*   public static void deleteCategory(String catId, MyCompleteListener completeListener) {
+    public static void deleteCategory(String catId, MyCompleteListener completeListener) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String userID = user.getUid();
 
@@ -721,12 +721,6 @@ public class DbQuery {
                                                                     break;
                                                                 }
                                                             }
-                                                            for (int i = 0; i < g_my_catList.size(); i++) {
-                                                                if (g_my_catList.get(i).getDocID().equals(catId)) {
-                                                                    g_my_catList.remove(i);
-                                                                    break;
-                                                                }
-                                                            }
                                                             completeListener.onSuccess();
                                                         } else {
                                                             completeListener.onFailure();
@@ -751,6 +745,6 @@ public class DbQuery {
                         completeListener.onFailure();
                     }
                 });
-    }*/
+    }
 
 }

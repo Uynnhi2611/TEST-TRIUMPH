@@ -1,7 +1,6 @@
 package com.example.testtriumph.Fragments;
 
-
-//import static com.example.testtriumph.DbQuery.deleteCategory;
+import static com.example.testtriumph.DbQuery.deleteCategory;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -73,12 +72,12 @@ public class MyTestFragment extends Fragment {
         });
 
         btnDel=view.findViewById(R.id.btnDelete);
-      /*  btnDel.setOnClickListener(new View.OnClickListener() {
+        btnDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 deleteCatgory();
             }
-        });*/
+        });
 
         return  view;
 
@@ -129,7 +128,7 @@ public class MyTestFragment extends Fragment {
         alertDialog.show();
     }
 
-   /* private void deleteCatgory(){
+   private void deleteCatgory(){
         // Kiểm tra xem danh sách có rỗng hay không
         if (DbQuery.g_my_catList.isEmpty()) {
             Toast.makeText(getContext(), "There are no categories! Please add a category.", Toast.LENGTH_SHORT).show();
@@ -166,7 +165,7 @@ public class MyTestFragment extends Fragment {
             // Hiển thị hộp thoại
             builder.show();
         }
-    }*/
+    }
 
 
 }
