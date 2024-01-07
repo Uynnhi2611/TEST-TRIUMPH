@@ -3,26 +3,24 @@ package com.example.mytest.Fragments;
 import static com.example.mytest.DbQuery.findTest;
 import static com.example.mytest.DbQuery.g_testList;
 
-import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.Toast;
 
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.mytest.Activities.MainActivity;
-import com.example.mytest.Activities.TestActivity;
 import com.example.mytest.Adapters.CategoryAdapter;
 import com.example.mytest.DbQuery;
 import com.example.mytest.Models.TestModel;
@@ -35,10 +33,10 @@ import java.util.List;
 public class CategoryFragment extends Fragment {
 
     private GridView catView;
+    private AutoCompleteTextView searchView;
     public CategoryFragment() {
         // Required empty public constructor
     }
-
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -47,40 +45,29 @@ public class CategoryFragment extends Fragment {
         Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
         ((MainActivity)getActivity()).getSupportActionBar().setTitle("Categories");
 
-        GridView catView = view.findViewById(R.id.cat_Grid);
+        catView = view.findViewById(R.id.cat_Grid);
         CategoryAdapter categoryAdapter = new CategoryAdapter(DbQuery.g_catList);
         catView.setAdapter(categoryAdapter);
 
-        SearchView searchView=view.findViewById(R.id.btnFind);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // User has submitted the search string
-                List<TestModel> foundTests = findTest(query, query); // Use the method you provided to find the tests
+        searchView=view.findViewById(R.id.btnFind);
 
-                if (!foundTests.isEmpty()) {
-                    // Tests found, start new activity here
-                    for (TestModel foundTest : foundTests) {
-                        Intent intent = new Intent(getActivity(), TestActivity.class);
-                        intent.putExtra("TEST_PATH", foundTest.getTestPath()); // Pass the test path to the new activity
-                        startActivity(intent);
-                    }
-                } else {
-                    // Tests not found, show a message to the user
-                    Toast.makeText(getActivity(), "Tests not found", Toast.LENGTH_SHORT).show();
-                }
+        ArrayList<String> dataSet = new ArrayList<>();
 
-                return false;
-            }
+        for (TestModel test : g_testList) {
+            String suggestion = test.getTestID() +" "+ test.getTestName();
+            dataSet.add(suggestion);
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>
+                (getActivity(), android.R.layout.simple_dropdown_item_1line, dataSet);
+        searchView.setAdapter(adapter);
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // User has changed the text. This method can be used to provide autocomplete suggestions.
-                return false;
-            }
-        });
+        // Set the threshold here
+        searchView.setThreshold(1);
 
-     /*   searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        return view;
+    }
+}
+ /*  searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // User has submitted the search string
@@ -109,33 +96,22 @@ public class CategoryFragment extends Fragment {
                 return false;
             }
         });*/
-       /* searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // User has submitted the search string
-                TestModel foundTest = findTest(query, query); // Use the method you provided to find the test
+ /*// Hiển thị testPath bằng AlertDialog
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Test Path")
+                            .setMessage(testPath)
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
 
-                if (foundTest != null) {
-                    // Test found, show a message to the user with test details
-                    String message = "Test found: \n" +
-                            "Test Name: " + foundTest.getTestName() + "\n" +
-                            "Test ID: " + foundTest.getTestID() + "\n" +
-                            "Test Path: " + foundTest.getTestPath();
-                    Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-                } else {
-                    // Test not found, show a message to the user
-                    Toast.makeText(getActivity(), "Test not found", Toast.LENGTH_SHORT).show();
-                }
+                    // Hiển thị g_foundTestList bằng AlertDialog
+                    StringBuilder foundTestsStr = new StringBuilder();
+                    for (TestModel test : foundTests) {
+                        foundTestsStr.append(test.getTestID()).append(" ").append(test.getTestName()).append("\n");
+                    }
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Found Tests")
+                            .setMessage(foundTestsStr.toString())
+                            .setPositiveButton(android.R.string.ok, null)
+                            .show();
+*/
 
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // User has changed the text. This method can be used to provide autocomplete suggestions.
-                return false;
-            }
-        });*/
-        return view;
-    }
-}

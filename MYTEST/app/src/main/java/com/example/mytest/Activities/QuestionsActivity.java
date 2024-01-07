@@ -1,7 +1,5 @@
 package com.example.mytest.Activities;
 
-
-
 import static com.example.mytest.DbQuery.ANSWERED;
 import static com.example.mytest.DbQuery.NOT_VISITED;
 import static com.example.mytest.DbQuery.REVIEW;
@@ -24,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -35,8 +34,14 @@ import androidx.recyclerview.widget.SnapHelper;
 
 import com.example.mytest.Adapters.QuestionGridAdapter;
 import com.example.mytest.Adapters.QuestionsAdapter;
+import com.example.mytest.Models.QuestionModel;
 import com.example.mytest.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.mlkit.nl.languageid.LanguageIdentification;
+import com.google.mlkit.nl.languageid.LanguageIdentifier;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class QuestionsActivity extends AppCompatActivity {
@@ -56,7 +61,7 @@ public class QuestionsActivity extends AppCompatActivity {
     private long timeLeft;
     private ImageView btnBookmark,btnVoice;
     TextToSpeech textToSpeech;
-   // LanguageIdentification languageIdentifier;
+    LanguageIdentification languageIdentifier;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,11 +79,7 @@ public class QuestionsActivity extends AppCompatActivity {
         gridAdapter=new QuestionGridAdapter(this,g_quesList.size());
         quesListGV.setAdapter(gridAdapter);
 
-        setSnapHelper();
-        setClickListeners();
-        startTimer();
-
-     /*   textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
@@ -87,10 +88,10 @@ public class QuestionsActivity extends AppCompatActivity {
             }
         });
 
+        setSnapHelper();
         setClickListeners();
-        startTimer();*/
+        startTimer();
     }
-
     private void init(){
         questionsView=findViewById(R.id.questions_view);
         tvQuesID=findViewById(R.id.tv_quesID);
@@ -119,7 +120,7 @@ public class QuestionsActivity extends AppCompatActivity {
                 btnBookmark.setImageResource(R.drawable.ic_bookmark);
             }
         }
-        //btnVoice=findViewById(R.id.btnVoice);
+        btnVoice=findViewById(R.id.btnVoice);
     }
     private void setSnapHelper(){
         SnapHelper snapHelper= new PagerSnapHelper();
@@ -247,20 +248,19 @@ public class QuestionsActivity extends AppCompatActivity {
                 addToBookmarks();
             }
         });
-     /*   btnVoice.setOnClickListener(new View.OnClickListener() {
+        btnVoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Lấy câu hỏi và các lựa chọn từ danh sách câu hỏi
                 QuestionModel currentQuestion = g_quesList.get(quesID);
                 String questionText = currentQuestion.getQuestion();
-                String optionA = currentQuestion.getOptionA();
-                String optionB = currentQuestion.getOptionB();
-                String optionC = currentQuestion.getOptionC();
-                String optionD = currentQuestion.getOptionD();
+                String options = String.format("A: %s. B: %s. C: %s. D: %s",
+                        currentQuestion.getOptionA(),
+                        currentQuestion.getOptionB(),
+                        currentQuestion.getOptionC(),
+                        currentQuestion.getOptionD());
 
-                // Tạo một chuỗi bao gồm cả câu hỏi và các lựa chọn
-                String textToSpeak = questionText + ". Option A: " + optionA + ". Option B: " + optionB
-                        + ". Option C: " + optionC + ". Option D: " + optionD;
+                String textToSpeak = questionText + ". " + options;
 
                 // Khởi tạo ngôn ngữ nhận dạng
                 LanguageIdentifier languageIdentifier = LanguageIdentification.getClient();
@@ -294,8 +294,17 @@ public class QuestionsActivity extends AppCompatActivity {
                         });
 
             }
-        });*/
+        });
 
+    }
+    @Override
+    protected void onDestroy() {
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+
+        super.onDestroy();
     }
 
    private void submitTest(){

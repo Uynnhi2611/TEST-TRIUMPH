@@ -36,8 +36,6 @@ public class TestActivity extends AppCompatActivity  {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
-     //   getSupportActionBar().setTitle(DbQuery.g_catList.get(DbQuery.g_selected_cat_index).getName());
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         testView = findViewById(R.id.test_recycler_view);
@@ -55,8 +53,7 @@ public class TestActivity extends AppCompatActivity  {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
         testView.setLayoutManager(layoutManager);
-        // Get the test path from the Intent
-        String testPath = getIntent().getStringExtra("TEST_PATH");
+
 
         DbQuery.loadTestData(new MyCompleteListener() {
             @Override

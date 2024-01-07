@@ -16,15 +16,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-     <SearchView
-         android:id="@+id/btnFind"
-         android:layout_width="350dp"
-         android:layout_height="wrap_content"
-         android:layout_alignParentStart="true"
-         android:layout_marginStart="8dp"
-         android:layout_marginLeft="8dp"
-         android:layout_marginRight="8dp"
-         android:queryHint="Tìm Kiếm " />
+        <AutoCompleteTextView
+            android:id="@+id/btnFind"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:hint="Tim Kiem"
+            android:drawableLeft="@drawable/ic_search"
+            android:inputType="text"/>
 
 
     </RelativeLayout>

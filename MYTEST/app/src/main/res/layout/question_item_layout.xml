@@ -1,84 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="match_parent"
+
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:id="@+id/tv_question"
-        android:layout_margin="8dp"
-        android:padding="8dp"
+        android:id="@+id/ll1"
         android:gravity="center"
-        android:layout_weight="1"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        android:text="Question No 1"
-        android:textStyle="bold"
-        android:scrollbars="vertical"
-        android:background="@android:color/white"
-        android:inputType="textMultiLine"
-        android:elevation="5dp"
-        android:translationZ="3dp"
-        />
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:paddingBottom="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <Button
-        android:id="@+id/optionA"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/unselected_btn"
-        android:elevation="3dp"
-        android:stateListAnimator="@null"
-        android:text="option A"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        android:translationZ="3dp"
-        />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_question"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:text="Question No 1"
+            android:textStyle="bold"
+            android:scrollbars="vertical"
+            android:background="@android:color/white"
+            android:inputType="textMultiLine"
+            android:elevation="5dp"
+            android:translationZ="3dp"
+            />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/optionB"
-        android:textColor="@android:color/black"
-        android:text="option B"
-        android:textSize="16sp"
-        android:background="@drawable/unselected_btn"
-        android:elevation="3dp"
-        android:translationZ="3dp"
-        android:stateListAnimator="@null"
-        android:layout_marginTop="16dp"
-        />
+        <ImageView
+            android:id="@+id/imgQues"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:src="@drawable/toan"
+            android:scaleType="fitXY"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/optionC"
-        android:textColor="@android:color/black"
-        android:text="option C"
-        android:textSize="16sp"
-        android:background="@drawable/unselected_btn"
-        android:elevation="3dp"
-        android:translationZ="3dp"
-        android:stateListAnimator="@null"
-        android:layout_marginTop="16dp"
-        />
+    </LinearLayout>
 
+    <GridLayout
+        android:layout_width="399dp"
+        android:layout_height="349dp"
+        android:alignmentMode="alignBounds"
+        android:columnCount="2"
+        android:padding="16dp"
+        android:rowCount="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ll1">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/optionD"
-        android:textColor="@android:color/black"
-        android:text="option D"
-        android:textSize="16sp"
-        android:background="@drawable/unselected_btn"
-        android:elevation="3dp"
-        android:translationZ="3dp"
-        android:stateListAnimator="@null"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        />
+        <!-- Option A -->
+        <LinearLayout
+            android:id="@+id/optionA"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:background="@drawable/unselected_btn"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_margin="10dp"
+            >
 
+            <ImageView
+                android:id="@+id/imgA"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:src="@drawable/ly"
+                android:scaleType="fitXY"/>
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/tv_A"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:inputType="textMultiLine"
+                android:scrollbars="vertical"
+                android:stateListAnimator="@null"
+                android:text="option A"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:translationZ="3dp"
+
+                />
+        </LinearLayout>
+
+        <!-- Option B -->
+
+        <LinearLayout
+            android:id="@+id/optionB"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:background="@drawable/unselected_btn"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_margin="10dp">
+
+            <ImageView
+                android:id="@+id/imgB"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:src="@drawable/ly"
+                android:scaleType="fitXY"
+                />
+
+            <TextView
+                android:id="@+id/tv_B"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:inputType="textMultiLine"
+                android:scrollbars="vertical"
+                android:stateListAnimator="@null"
+                android:text="option B"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:translationZ="3dp"
+                />
+        </LinearLayout>
+
+        <!-- Option C -->
+        <LinearLayout
+            android:id="@+id/optionC"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:background="@drawable/unselected_btn"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_margin="10dp">
+
+            <ImageView
+                android:id="@+id/imgC"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:src="@drawable/ly"
+                android:scaleType="fitXY"/>
+
+            <TextView
+                android:id="@+id/tv_C"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:inputType="textMultiLine"
+                android:scrollbars="vertical"
+                android:stateListAnimator="@null"
+                android:text="option C"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:translationZ="3dp"
+              />
+        </LinearLayout>
+        <!-- Option D -->
+        <LinearLayout
+            android:id="@+id/optionD"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:background="@drawable/unselected_btn"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_margin="10dp">
+
+            <ImageView
+                android:id="@+id/imgD"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:src="@drawable/ly"
+                android:scaleType="fitXY"
+                />
+
+            <TextView
+                android:id="@+id/tv_D"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:inputType="textMultiLine"
+                android:scrollbars="vertical"
+                android:stateListAnimator="@null"
+                android:text="option D"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:translationZ="3dp"
+                />
+        </LinearLayout>
+
+    </GridLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

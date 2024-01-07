@@ -38,6 +38,7 @@ public class DbQuery {
     public static List<CategoryModel> g_my_catList = new ArrayList<>();
     public static int g_selected_cat_index = 0;
     public static List<TestModel> g_testList = new ArrayList<>();
+    public static List<TestModel> g_foundTestList = new ArrayList<>();
     public static int g_selected_test_index = 0;
     public static List<String> g_bmIdList = new ArrayList<>();
     public static List<QuestionModel> g_bookmarksList = new ArrayList<>();
@@ -214,6 +215,11 @@ public class DbQuery {
                                         documentSnapshot.getString("B"),
                                         documentSnapshot.getString("C"),
                                         documentSnapshot.getString("D"),
+                                        documentSnapshot.getString("IMGQUES"),
+                                        documentSnapshot.getString("IMGA"),
+                                        documentSnapshot.getString("IMGB"),
+                                        documentSnapshot.getString("IMGC"),
+                                        documentSnapshot.getString("IMGD"),
                                         documentSnapshot.getLong("ANSWER").intValue(),
                                         0,
                                         -1,
@@ -233,6 +239,7 @@ public class DbQuery {
                     });
         }
     }
+
     public static void getTopUsers(MyCompleteListener completeListener) {
         g_usersList.clear();
         String myUID = FirebaseAuth.getInstance().getUid();
@@ -389,6 +396,11 @@ public class DbQuery {
                                     doc.getString("B"),
                                     doc.getString("C"),
                                     doc.getString("D"),
+                                    doc.getString("IMGQUES"),
+                                    doc.getString("IMGA"),
+                                    doc.getString("IMGB"),
+                                    doc.getString("IMGC"),
+                                    doc.getString("IMGD"),
                                     doc.getLong("ANSWER").intValue(),
                                     -1,
                                     NOT_VISITED,
@@ -404,9 +416,103 @@ public class DbQuery {
                         completeListener.onFailure();
                     }
                 });
-
     }
-  /* public static void loadTestData(MyCompleteListener completeListener) {
+    public static void loadTestData(MyCompleteListener completeListener) {
+       g_testList.clear();
+       String catDocID = g_catList.get(g_selected_cat_index).getDocID();
+       g_firestore.collection("QUIZ").document(catDocID)
+               .collection("TESTS_LIST")
+               .get()
+               .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                   @Override
+                   public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                       for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                           String testID = documentSnapshot.getString("TEST_ID");
+                           String docID = documentSnapshot.getId(); // Get the auto-generated document ID
+                           g_testList.add(new TestModel(
+                                   testID,
+                                   documentSnapshot.getString("TEST_NAME"),
+                                   0,
+                                   documentSnapshot.getLong("TEST_TIME").intValue(),
+                                   "/QUIZ/" + catDocID + "/TESTS_LIST/" + docID //+ "/" + testID // updated path
+                           ));
+                       }
+
+                       completeListener.onSuccess();
+                   }
+               })
+               .addOnFailureListener(new OnFailureListener() {
+                   @Override
+                   public void onFailure(@NonNull Exception e) {
+                       completeListener.onFailure();
+                   }
+               });
+   }
+    public static void loadData(MyCompleteListener completeListener) {
+        loadCategories(new MyCompleteListener() {
+            @Override
+            public void onSuccess() {
+                getUserData(new MyCompleteListener() {
+                    @Override
+                    public void onSuccess() {
+                        getUsersCount(new MyCompleteListener() {
+                            @Override
+                            public void onSuccess() {
+                                loadBmIds(new MyCompleteListener() {
+                                    @Override
+                                    public void onSuccess() {
+                                        for (CategoryModel category : g_catList) {
+                                            g_selected_cat_index = g_catList.indexOf(category);
+                                            loadTestData(new MyCompleteListener() {
+                                                @Override
+                                                public void onSuccess() {
+                                                    if (g_catList.indexOf(category) == g_catList.size() - 1) {
+                                                        completeListener.onSuccess();
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onFailure() {
+                                                    completeListener.onFailure();
+                                                }
+                                            });
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure() {
+                                        completeListener.onFailure();
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                completeListener.onFailure();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        completeListener.onFailure();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure() {
+                completeListener.onFailure();
+            }
+        });
+    }
+    public static List<TestModel> findTest(String testId, String testName) {
+        return g_testList.stream()
+                .filter(test -> test.getTestID().equals(testId) || test.getTestName().equals(testName))
+                .collect(Collectors.toList());
+    }
+}
+/* public static void loadTestData(MyCompleteListener completeListener) {
         g_testList.clear();
         g_firestore.collection("QUIZ").document(g_catList.get(g_selected_cat_index).getDocID())
                 .collection("TESTS_LIST").document("TESTS_INFO")
@@ -433,169 +539,7 @@ public class DbQuery {
                 });
 
     }*/
-   public static void loadTestData(MyCompleteListener completeListener) {
-       g_testList.clear();
-       String catDocID = g_catList.get(g_selected_cat_index).getDocID();
-       g_firestore.collection("QUIZ").document(catDocID)
-               .collection("TESTS_LIST")
-               .get()
-               .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                   @Override
-                   public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                       for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                           String testID = documentSnapshot.getString("TEST_ID");
-                           String docID = documentSnapshot.getId(); // Get the auto-generated document ID
-                           g_testList.add(new TestModel(
-                                   testID,
-                                   documentSnapshot.getString("TEST_NAME"),
-                                   0,
-                                   documentSnapshot.getLong("TEST_TIME").intValue(),
-                                   "/QUIZ/" + catDocID + "/TESTS_LIST/" + docID + "/" + testID // updated path
-                           ));
-                       }
-
-                       completeListener.onSuccess();
-                   }
-               })
-               .addOnFailureListener(new OnFailureListener() {
-                   @Override
-                   public void onFailure(@NonNull Exception e) {
-                       completeListener.onFailure();
-                   }
-               });
-   }
-   /*  public static void loadSpecificTest(String testPath, MyCompleteListener completeListener) {
-        g_testList.clear();
-
-        // Split the testPath and get the necessary IDs
-        String[] pathParts = testPath.split("/");
-        String catDocID = pathParts[2];
-        String docID = pathParts[4];
-        String testID = pathParts[5];
-
-        g_firestore.collection("QUIZ").document(catDocID)
-                .collection("TESTS_LIST").document(docID)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        g_testList.add(new TestModel(
-                                testID,
-                                documentSnapshot.getString("TEST_NAME"),
-                                0,
-                                documentSnapshot.getLong("TEST_TIME").intValue(),
-                                testPath
-                        ));
-
-                        completeListener.onSuccess();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        completeListener.onFailure();
-                    }
-                });
-    }*/
-    /*  public static void loadData(MyCompleteListener completeListener) {
-        loadCategories(new MyCompleteListener() {
-            @Override
-            public void onSuccess() {
-                getUserData(new MyCompleteListener() {
-                    @Override
-                    public void onSuccess() {
-
-                        getUsersCount(new MyCompleteListener() {
-                            @Override
-                            public void onSuccess() {
-                                loadBmIds(completeListener);
-                            }
-
-                            @Override
-                            public void onFailure() {
-                                completeListener.onFailure();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onFailure() {
-                        completeListener.onFailure();
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure() {
-                completeListener.onFailure();
-            }
-        });
-    }
-*/
-    public static void loadData(MyCompleteListener completeListener) {
-      loadCategories(new MyCompleteListener() {
-          @Override
-          public void onSuccess() {
-              getUserData(new MyCompleteListener() {
-                  @Override
-                  public void onSuccess() {
-                      getUsersCount(new MyCompleteListener() {
-                          @Override
-                          public void onSuccess() {
-                              loadBmIds(new MyCompleteListener() {
-                                  @Override
-                                  public void onSuccess() {
-                                      for (CategoryModel category : g_catList) {
-                                          g_selected_cat_index = g_catList.indexOf(category);
-                                          loadTestData(new MyCompleteListener() {
-                                              @Override
-                                              public void onSuccess() {
-                                                  if (g_catList.indexOf(category) == g_catList.size() - 1) {
-                                                      completeListener.onSuccess();
-                                                  }
-                                              }
-
-                                              @Override
-                                              public void onFailure() {
-                                                  completeListener.onFailure();
-                                              }
-                                          });
-                                      }
-                                  }
-
-                                  @Override
-                                  public void onFailure() {
-                                      completeListener.onFailure();
-                                  }
-                              });
-                          }
-
-                          @Override
-                          public void onFailure() {
-                              completeListener.onFailure();
-                          }
-                      });
-                  }
-
-                  @Override
-                  public void onFailure() {
-                      completeListener.onFailure();
-                  }
-              });
-          }
-
-          @Override
-          public void onFailure() {
-              completeListener.onFailure();
-          }
-      });
-  }
-    public static List<TestModel> findTest(String testId, String testName) {
-        return g_testList.stream()
-                .filter(test -> test.getTestID().equals(testId) || test.getTestName().equals(testName))
-                .collect(Collectors.toList());
-    }
-   /* public static void createCategory(CategoryModel newCategory, MyCompleteListener completeListener) {
+/* public static void createCategory(CategoryModel newCategory, MyCompleteListener completeListener) {
         // Lấy ID của người dùng hiện tại
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String userID = user.getUid();
@@ -740,5 +684,70 @@ public class DbQuery {
                     }
                 });
     }*/
+/*  public static void loadData(MyCompleteListener completeListener) {
+        loadCategories(new MyCompleteListener() {
+            @Override
+            public void onSuccess() {
+                getUserData(new MyCompleteListener() {
+                    @Override
+                    public void onSuccess() {
 
-}
+                        getUsersCount(new MyCompleteListener() {
+                            @Override
+                            public void onSuccess() {
+                                loadBmIds(completeListener);
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                completeListener.onFailure();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        completeListener.onFailure();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure() {
+                completeListener.onFailure();
+            }
+        });
+    }
+*/
+/*  public static void loadFoundTest(String testPath, MyCompleteListener completeListener) {
+        g_testList.clear();
+
+        // Split the testPath and get the necessary IDs
+        String[] pathParts = testPath.split("/");
+        String catDocID = pathParts[2];
+        String docID = pathParts[4];
+
+        g_firestore.collection("QUIZ").document(catDocID)
+                .collection("TESTS_LIST").document(docID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        g_foundTestList.add(new TestModel(
+                                docID,
+                                documentSnapshot.getString("TEST_NAME"),
+                                0,
+                                documentSnapshot.getLong("TEST_TIME").intValue(),
+                                testPath
+                        ));
+
+                        completeListener.onSuccess();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        completeListener.onFailure();
+                    }
+                });
+    }*/
