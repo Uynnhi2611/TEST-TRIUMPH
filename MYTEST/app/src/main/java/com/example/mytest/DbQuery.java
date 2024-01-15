@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -142,12 +143,16 @@ public class DbQuery {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         for (DocumentSnapshot userDoc : queryDocumentSnapshots) {
-                            String emailId = userDoc.getString("EMAIL_ID");
-                            String name = userDoc.getString("NAME");
-                            String phone = userDoc.getString("PHONE");
-                            String ngayTao = userDoc.getString("ngayTao");
+                            // Kiểm tra xem tài liệu có phải là "TOTAL_USERS" không
+                            if (!userDoc.getId().equals("TOTAL_USERS")) {
+                                String userId = userDoc.getId(); // Lấy ID của người dùng
+                                String emailId = userDoc.getString("EMAIL_ID");
+                                String name = userDoc.getString("NAME");
+                                String phone = userDoc.getString("PHONE");
+                                String ngayTao = userDoc.getString("ngayTao");
 
-                            g_usersData.add(new ProfileModel(name, emailId, phone, ngayTao));
+                                g_usersData.add(new ProfileModel(userId, name, emailId, phone, ngayTao));
+                            }
                         }
                         completeListener.onSuccess();
                     }
@@ -159,7 +164,61 @@ public class DbQuery {
                     }
                 });
     }
+    public static void loginUser(String email, String password, final MyCompleteListener completeListener) {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Kiểm tra xem người dùng có hoạt động không
+                            g_firestore.collection("USERS").document(task.getResult().getUser().getUid()).get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            if (documentSnapshot.getBoolean("isActive")) {
+                                                completeListener.onSuccess();
+                                            } else {
+                                                FirebaseAuth.getInstance().signOut();
+                                                completeListener.onFailure();
+                                            }
+                                        }
+                                    });
+                        } else {
+                            completeListener.onFailure();
+                        }
+                    }
+                });
+    }
 
+    public static void deleteUser(String userId, MyCompleteListener completeListener) {
+        g_firestore.collection("USERS").document(userId).delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Giảm COUNT trong TOTAL_USERS
+                        g_firestore.collection("USERS").document("TOTAL_USERS")
+                                .update("COUNT", FieldValue.increment(-1))
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        completeListener.onSuccess();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        completeListener.onFailure();
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        completeListener.onFailure();
+                    }
+                });
+    }
     public static void loadMyScores(MyCompleteListener completeListener) {
         g_firestore.collection("USERS").document(FirebaseAuth.getInstance().getUid())
                 .collection("USER_DATA").document("MY_SCORES")

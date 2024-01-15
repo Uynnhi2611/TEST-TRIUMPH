@@ -1,6 +1,7 @@
 package com.example.mytest.Models;
 
 public class ProfileModel {
+    private String userId;
     private String name;
     private String email;
     private String phone;
@@ -14,11 +15,20 @@ public class ProfileModel {
         this.bookmarksCount=bookmarksCount;
     }
 
-    public ProfileModel(String name, String email, String phone, String ngayTao) {
+    public ProfileModel(String userId, String name, String email, String phone, String ngayTao) {
+        this.userId = userId;
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.ngayTao = ngayTao;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public int getBookmarksCount() {
