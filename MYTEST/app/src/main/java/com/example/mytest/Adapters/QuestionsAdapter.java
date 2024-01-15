@@ -112,7 +112,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
             View.OnClickListener optionBClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    selectOption(optionB,1,pos);
+                    selectOption(optionB,2,pos);
                 }
             };
             optionB.setOnClickListener(optionBClickListener);
@@ -122,7 +122,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
             View.OnClickListener optionCClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    selectOption(optionC,1,pos);
+                    selectOption(optionC,3,pos);
                 }
             };
             optionC.setOnClickListener(optionCClickListener);
@@ -132,7 +132,7 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionsAdapter.View
             View.OnClickListener optionDClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    selectOption(optionD,1,pos);
+                    selectOption(optionD,4,pos);
                 }
             };
             optionD.setOnClickListener(optionDClickListener);

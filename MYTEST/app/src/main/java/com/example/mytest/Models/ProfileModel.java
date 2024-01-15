@@ -5,6 +5,7 @@ public class ProfileModel {
     private String email;
     private String phone;
     private int bookmarksCount;
+    private String ngayTao;
 
     public ProfileModel(String name, String email, String phone, int bookmarksCount) {
         this.name = name;
@@ -12,6 +13,14 @@ public class ProfileModel {
         this.phone=phone;
         this.bookmarksCount=bookmarksCount;
     }
+
+    public ProfileModel(String name, String email, String phone, String ngayTao) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.ngayTao = ngayTao;
+    }
+
     public int getBookmarksCount() {
         return bookmarksCount;
     }
@@ -42,5 +51,13 @@ public class ProfileModel {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getNgayTao() {
+        return ngayTao;
+    }
+
+    public void setNgayTao(String ngayTao) {
+        this.ngayTao = ngayTao;
     }
 }

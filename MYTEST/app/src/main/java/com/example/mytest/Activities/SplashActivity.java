@@ -16,6 +16,7 @@ import com.example.mytest.DbQuery;
 import com.example.mytest.MyCompleteListener;
 import com.example.mytest.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SplashActivity extends AppCompatActivity {
@@ -34,17 +35,26 @@ public class SplashActivity extends AppCompatActivity {
 
        DbQuery.g_firestore=FirebaseFirestore.getInstance();
 
-       new Handler().postDelayed(new Runnable() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(mAuth.getCurrentUser()!= null){
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+                if(currentUser != null){
+                    String currentEmail = currentUser.getEmail();
                     DbQuery.loadData(new MyCompleteListener() {
                         @Override
                         public void onSuccess() {
-                            Intent intent = new Intent(SplashActivity.this,MainActivity.class);
+                            Intent intent;
+                            if(currentEmail.equals("admin123@gmail.com")) {
+                              //  mAuth.signOut();
+                                intent = new Intent(SplashActivity.this, AdminActivity.class);
+                            } else {
+                                intent = new Intent(SplashActivity.this, MainActivity.class);
+                            }
                             startActivity(intent);
                             SplashActivity.this.finish();
                         }
+
                         @Override
                         public void onFailure() {
                             Toast.makeText(SplashActivity.this, "Something went wrong! Please try again.",
@@ -53,13 +63,19 @@ public class SplashActivity extends AppCompatActivity {
                     });
 
                 }else {
-                    Intent intent= new Intent(SplashActivity.this,LoginActivity.class);
+                    Intent intent= new Intent(SplashActivity.this, LoginActivity.class);
                     startActivity(intent);
                     SplashActivity.this.finish();
                 }
             }
         }, Splash_timeout);
-        /*new Handler().postDelayed(new Runnable() {
+
+
+        Animation myanimation= AnimationUtils.loadAnimation(SplashActivity.this,R.anim.animation);
+        wel.startAnimation(myanimation);
+    }
+}
+    /*new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 if(mAuth.getCurrentUser()!= null){
@@ -79,9 +95,3 @@ public class SplashActivity extends AppCompatActivity {
                 }
             }
         }, Splash_timeout);*/
-
-
-        Animation myanimation= AnimationUtils.loadAnimation(SplashActivity.this,R.anim.animation);
-        wel.startAnimation(myanimation);
-    }
-}

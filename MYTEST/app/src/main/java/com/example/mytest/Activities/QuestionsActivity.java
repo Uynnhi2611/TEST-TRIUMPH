@@ -79,11 +79,12 @@ public class QuestionsActivity extends AppCompatActivity {
         gridAdapter=new QuestionGridAdapter(this,g_quesList.size());
         quesListGV.setAdapter(gridAdapter);
 
-        textToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+        // Khởi tạo TextToSpeech
+        textToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
-                    textToSpeech.setLanguage(new Locale("vi"));
+                    textToSpeech.setLanguage(Locale.ENGLISH); // Ngôn ngữ mặc định là tiếng Anh
                 }
             }
         });
@@ -251,62 +252,51 @@ public class QuestionsActivity extends AppCompatActivity {
         btnVoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Lấy câu hỏi và các lựa chọn từ danh sách câu hỏi
+                // Lấy câu hỏi và các lựa chọn từ câu hỏi hiện tại
                 QuestionModel currentQuestion = g_quesList.get(quesID);
-                String questionText = currentQuestion.getQuestion();
-                String options = String.format("A: %s. B: %s. C: %s. D: %s",
-                        currentQuestion.getOptionA(),
-                        currentQuestion.getOptionB(),
-                        currentQuestion.getOptionC(),
-                        currentQuestion.getOptionD());
+                String question = currentQuestion.getQuestion();
+                String optionA = currentQuestion.getOptionA();
+                String optionB = currentQuestion.getOptionB();
+                String optionC = currentQuestion.getOptionC();
+                String optionD = currentQuestion.getOptionD();
 
-                String textToSpeak = questionText + ". " + options;
+                // Kiểm tra nếu câu hỏi hoặc các lựa chọn rỗng
+                if (question.isEmpty() && optionA.isEmpty() && optionB.isEmpty() && optionC.isEmpty() && optionD.isEmpty()) {
+                    textToSpeech.speak("Xem hình bên dưới và chọn một đáp án bạn cho là phù hợp nhất", TextToSpeech.QUEUE_FLUSH, null);
+                } else {
+                    // Nếu câu hỏi là tiếng Anh, đọc bằng tiếng Anh
+                    if (isEnglish(question)) {
+                        textToSpeech.setLanguage(Locale.ENGLISH);
+                    } else {
+                        textToSpeech.setLanguage(new Locale("vi"));
+                    }
 
-                // Khởi tạo ngôn ngữ nhận dạng
-                LanguageIdentifier languageIdentifier = LanguageIdentification.getClient();
+                    // Đọc câu hỏi và các lựa chọn
+                    String textToSpeak = question + "...A. " + optionA + "...B. " + optionB + "...C. " + optionC + "...D. " + optionD;
+                    textToSpeech.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
 
-                // Xác định ngôn ngữ của một chuỗi văn bản
-                languageIdentifier.identifyLanguage(textToSpeak)
-                        .addOnSuccessListener(new OnSuccessListener<String>() {
-                            @Override
-                            public void onSuccess(@Nullable String languageCode) {
-                                if (!languageCode.equals("und")) {
-                                    if ("en".equals(languageCode)) {
-                                        textToSpeech.setLanguage(Locale.ENGLISH);
-                                    } else if ("vi".equals(languageCode)) {
-                                        textToSpeech.setLanguage(new Locale("vi"));
-                                    } else {
-                                        // Mặc định là tiếng Anh nếu ngôn ngữ không được hỗ trợ
-                                        textToSpeech.setLanguage(Locale.ENGLISH);
-                                    }
-                                } else {
-                                    // Model không thể xác định ngôn ngữ
-                                }
-                                // Đọc chuỗi sau khi đã xác định và thiết lập ngôn ngữ
-                                textToSpeech.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null);
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                // Model không thể xác định ngôn ngữ hoặc xảy ra lỗi khác
-                            }
-                        });
-
+                }
             }
         });
 
+
     }
+    public boolean isEnglish(String text) {
+        if (text.matches("[\\d+\\-*/ ]+")) {
+            return false;
+        }
+        return !text.matches("[^\\p{L}\\d ,.!?+]+");
+    }
+
     @Override
     protected void onDestroy() {
+        // Đảm bảo giải phóng tài nguyên của TextToSpeech
         if (textToSpeech != null) {
             textToSpeech.stop();
             textToSpeech.shutdown();
         }
-
         super.onDestroy();
     }
-
    private void submitTest(){
         AlertDialog.Builder builder=new AlertDialog.Builder(QuestionsActivity.this);
         builder.setCancelable(true);

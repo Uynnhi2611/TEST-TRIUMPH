@@ -26,24 +26,26 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DbQuery {
     public static FirebaseFirestore g_firestore;
     public static List<CategoryModel> g_catList = new ArrayList<>();
-    public static List<CategoryModel> g_my_catList = new ArrayList<>();
     public static int g_selected_cat_index = 0;
     public static List<TestModel> g_testList = new ArrayList<>();
-    public static List<TestModel> g_foundTestList = new ArrayList<>();
     public static int g_selected_test_index = 0;
     public static List<String> g_bmIdList = new ArrayList<>();
     public static List<QuestionModel> g_bookmarksList = new ArrayList<>();
     public static List<QuestionModel> g_quesList = new ArrayList<>();
     public static List<RankModel> g_usersList = new ArrayList<>();
+    public static List<ProfileModel> g_usersData = new ArrayList<>();
     public static int g_usersCount = 0;
     public static boolean isMeOnTopList = false;
     public static ProfileModel myProfile = new ProfileModel("NA", null, null, 0);
@@ -53,16 +55,18 @@ public class DbQuery {
     public static final int REVIEW = 3;
     public static RankModel myPerformance = new RankModel("NULL", 0, -1);
     static int tmp;
-    public static Map<String, String> testIdToName = new HashMap<>();
-    public static Map<String, String> testNameToId = new HashMap<>();
-
-
-    public static void createUserData(String email, String name, String role, MyCompleteListener completeListener) {
+    public static void createUserData(String email, String name, MyCompleteListener completeListener) {
         Map<String, Object> userData = new ArrayMap<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String currentDate = sdf.format(new Date());
+// Lưu trữ thông tin người dùng trong Firestore
+
         userData.put("EMAIL_ID", email);
         userData.put("NAME", name);
         userData.put("TOTAL_SCORE", 0);
-        userData.put("ROLE", role);
+        userData.put("ngayTao", currentDate);
+        userData.put("PHONE", "");
+
 
         DocumentReference userDoc = g_firestore.collection("USERS")
                 .document(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -71,13 +75,6 @@ public class DbQuery {
 
         DocumentReference countDoc = g_firestore.collection("USERS").document("TOTAL_USERS");
         batch.update(countDoc, "COUNT", FieldValue.increment(1));
-        if (role.equals("Student")) {
-            // Nếu người dùng đăng ký với vai trò là Học sinh
-            batch.update(countDoc, "STUDENT", FieldValue.increment(1));
-        } else if (role.equals("Teacher")) {
-            // Nếu người dùng đăng ký với vai trò là Giáo viên
-            batch.update(countDoc, "TEACHER", FieldValue.increment(1));
-        }
         batch.commit()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -128,10 +125,6 @@ public class DbQuery {
                         myProfile.setEmail(documentSnapshot.getString("EMAIL_ID"));
                         if (documentSnapshot.getString("PHONE") != null)
                             myProfile.setPhone(documentSnapshot.getString("PHONE"));
-                        if (documentSnapshot.get("BOOKMARKS") != null)
-                            myProfile.setBookmarksCount(documentSnapshot.getLong("BOOKMARKS").intValue());
-                        myPerformance.setScore(documentSnapshot.getLong("TOTAL_SCORE").intValue());
-                        myPerformance.setName(documentSnapshot.getString("NAME"));
                         completeListener.onSuccess();
                     }
                 })
@@ -142,6 +135,31 @@ public class DbQuery {
                     }
                 });
     }
+    public static void loadUserData(MyCompleteListener completeListener) {
+        g_usersData.clear();
+        g_firestore.collection("USERS").get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot userDoc : queryDocumentSnapshots) {
+                            String emailId = userDoc.getString("EMAIL_ID");
+                            String name = userDoc.getString("NAME");
+                            String phone = userDoc.getString("PHONE");
+                            String ngayTao = userDoc.getString("ngayTao");
+
+                            g_usersData.add(new ProfileModel(name, emailId, phone, ngayTao));
+                        }
+                        completeListener.onSuccess();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        completeListener.onFailure();
+                    }
+                });
+    }
+
     public static void loadMyScores(MyCompleteListener completeListener) {
         g_firestore.collection("USERS").document(FirebaseAuth.getInstance().getUid())
                 .collection("USER_DATA").document("MY_SCORES")
@@ -239,7 +257,6 @@ public class DbQuery {
                     });
         }
     }
-
     public static void getTopUsers(MyCompleteListener completeListener) {
         g_usersList.clear();
         String myUID = FirebaseAuth.getInstance().getUid();
@@ -276,26 +293,6 @@ public class DbQuery {
                         completeListener.onFailure();
                     }
                 });
-    }
-    //đếm student
-    public static void getUsersCount(MyCompleteListener completeListener) {
-        g_firestore.collection("USERS").document("TOTAL_USERS")
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                        g_usersCount = documentSnapshot.getLong("STUDENT").intValue();
-
-                        completeListener.onSuccess();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        completeListener.onFailure();
-                    }
-                });
-
     }
     public static void saveResult(int score, MyCompleteListener completeListener) {
         WriteBatch batch = g_firestore.batch();
@@ -448,6 +445,25 @@ public class DbQuery {
                    }
                });
    }
+    public static void getUsersCount(MyCompleteListener completeListener){
+        g_firestore.collection("USERS").document("TOTAL_USERS")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                        g_usersCount=documentSnapshot.getLong("COUNT").intValue();
+
+                        completeListener.onSuccess();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        completeListener.onFailure();
+                    }
+                });
+
+    }
     public static void loadData(MyCompleteListener completeListener) {
         loadCategories(new MyCompleteListener() {
             @Override
@@ -470,7 +486,6 @@ public class DbQuery {
                                                         completeListener.onSuccess();
                                                     }
                                                 }
-
                                                 @Override
                                                 public void onFailure() {
                                                     completeListener.onFailure();

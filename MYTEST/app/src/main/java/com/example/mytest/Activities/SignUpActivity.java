@@ -48,7 +48,7 @@ public class SignUpActivity extends AppCompatActivity {
         email=findViewById(R.id.emailID);
         pass=findViewById(R.id.password);
         confirmPass=findViewById(R.id.confirm_pass);
-        roleSpinner=findViewById(R.id.role_spinner);
+     //   roleSpinner=findViewById(R.id.role_spinner);
         btnSignUp=findViewById(R.id.btnSignUp);
         btnBack=findViewById(R.id.btnBback);
         progressDialog=new Dialog(SignUpActivity.this);
@@ -67,7 +67,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        roleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+       /* roleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 roleStr = parent.getItemAtPosition(position).toString();
@@ -76,7 +76,7 @@ public class SignUpActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
                 // Xử lý trường hợp không có gì được chọn
             }
-        });
+        });*/
 
         btnSignUp.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
@@ -87,7 +87,6 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
     }
-
     private boolean validate(){
         nameStr=name.getText().toString().trim();
         passStr=pass.getText().toString().trim();
@@ -126,10 +125,10 @@ public class SignUpActivity extends AppCompatActivity {
             Toast.makeText(SignUpActivity.this,"Password and confirm Password should be same!",Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (roleStr == null || roleStr.isEmpty() || roleStr.equals("Select a role")) {
+       /* if (roleStr == null || roleStr.isEmpty() || roleStr.equals("Select a role")) {
             Toast.makeText(SignUpActivity.this,"Please select a role!",Toast.LENGTH_SHORT).show();
             return false;
-        }
+        }*/
         return true;
     }
 
@@ -143,7 +142,7 @@ public class SignUpActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(SignUpActivity.this,"Sign Up Successfull",Toast.LENGTH_SHORT).show();
 
-                            DbQuery.createUserData(emailStr,nameStr,roleStr,new MyCompleteListener(){
+                            DbQuery.createUserData(emailStr,nameStr,new MyCompleteListener(){
                                 @Override
                                 public void onSuccess() {
 

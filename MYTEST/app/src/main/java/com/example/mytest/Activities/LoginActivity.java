@@ -111,7 +111,8 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void login(){
         progressDialog.show();
-        mAuth.signInWithEmailAndPassword(email.getText().toString().trim(), pass.getText().toString().trim())
+        String inputEmail = email.getText().toString().trim();
+        mAuth.signInWithEmailAndPassword(inputEmail, pass.getText().toString().trim())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -122,7 +123,12 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess() {
                                     progressDialog.dismiss();
-                                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                                    Intent intent;
+                                    if(inputEmail.equals("admin123@gmail.com")) {
+                                        intent = new Intent(LoginActivity.this, AdminActivity.class);
+                                    } else {
+                                        intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    }
                                     startActivity(intent);
                                     finish();
                                 }
@@ -141,8 +147,8 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
-
     }
+
     private void googleSignIn(){
         Intent signInIntent=mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent,RC_SIGN_IN);
@@ -173,57 +179,29 @@ public class LoginActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
 
                             Toast.makeText(LoginActivity.this,"Google Sign In Success",Toast.LENGTH_SHORT).show();
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            FirebaseUser user=mAuth.getCurrentUser();
 
-                            if (task.getResult().getAdditionalUserInfo().isNewUser()) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                                builder.setTitle("Choose your role");
-                                String[] roles = {"Teacher", "Student"};
-                                builder.setItems(roles, new DialogInterface.OnClickListener() {
+                            if(task.getResult().getAdditionalUserInfo().isNewUser()){
+                                DbQuery.createUserData(user.getEmail(), user.getDisplayName(), new MyCompleteListener() {
                                     @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        String role = roles[which];
-                                        DbQuery.createUserData(user.getEmail(), user.getDisplayName(), role, new MyCompleteListener() {
+                                    public void onSuccess() {
+                                        DbQuery.loadData(new MyCompleteListener() {
                                             @Override
                                             public void onSuccess() {
-
-                                                DbQuery.loadData(new MyCompleteListener() {
-                                                    @Override
-                                                    public void onSuccess() {
-                                                        progressDialog.dismiss();
-                                                        Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                                                        startActivity(intent);
-                                                        finish();
-                                                    }
-
-                                                    @Override
-                                                    public void onFailure() {
-                                                        progressDialog.dismiss();
-                                                        Toast.makeText(LoginActivity.this, "Something went wrong! Please try again.",
-                                                                Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
+                                                progressDialog.dismiss();
+                                                Intent intent=new Intent(LoginActivity.this,MainActivity.class);
+                                                startActivity(intent);
+                                                LoginActivity.this.finish();
                                             }
+
                                             @Override
                                             public void onFailure() {
-                                                // Xử lý khi tạo dữ liệu người dùng thất bại
                                                 progressDialog.dismiss();
                                                 Toast.makeText(LoginActivity.this, "Something went wrong! Please try again.",
                                                         Toast.LENGTH_SHORT).show();
                                             }
                                         });
-                                    }
-                                });
-                                builder.show();
-                            }
-                            else {
-                                DbQuery.loadData(new MyCompleteListener() {
-                                    @Override
-                                    public void onSuccess() {
-                                        progressDialog.dismiss();
-                                        Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
+
                                     }
 
                                     @Override
@@ -233,7 +211,23 @@ public class LoginActivity extends AppCompatActivity {
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 });
+                            }else {
+                                DbQuery.loadData(new MyCompleteListener() {
+                                    @Override
+                                    public void onSuccess() {
+                                        progressDialog.dismiss();
+                                        Intent intent=new Intent(LoginActivity.this,MainActivity.class);
+                                        startActivity(intent);
+                                        LoginActivity.this.finish();
+                                    }
 
+                                    @Override
+                                    public void onFailure() {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(LoginActivity.this, "Something went wrong! Please try again.",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
                         }else {
                             progressDialog.dismiss();
