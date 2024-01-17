@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
+import com.example.mytest.Activities.ManageQuesActivity;
 import com.example.mytest.Activities.QuestionsActivity;
 import com.example.mytest.DbQuery;
 import com.example.mytest.R;
@@ -60,8 +61,13 @@ public class QuestionGridAdapter extends BaseAdapter {
         myview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(context instanceof QuestionsActivity)
-                    ((QuestionsActivity)context).goToQuestion(i);
+                if(context instanceof QuestionsActivity) {
+                    ((QuestionsActivity) context).goToQuestion(i);
+                }
+                if(context instanceof ManageQuesActivity) {
+                    ((ManageQuesActivity) context).goToQuestion(i);
+                }
+
             }
         });
         TextView quesTV=myview.findViewById(R.id.ques_num);

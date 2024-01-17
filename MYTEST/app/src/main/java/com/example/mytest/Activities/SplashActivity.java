@@ -35,7 +35,7 @@ public class SplashActivity extends AppCompatActivity {
 
        DbQuery.g_firestore=FirebaseFirestore.getInstance();
 
-        new Handler().postDelayed(new Runnable() {
+       new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -69,7 +69,26 @@ public class SplashActivity extends AppCompatActivity {
                 }
             }
         }, Splash_timeout);
-
+    /*    new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(mAuth.getCurrentUser()!= null){
+                    // Đăng xuất người dùng khỏi Firebase
+                    mAuth.signOut();
+                    // Kiểm tra nếu người dùng đã đăng xuất
+                    if(mAuth.getCurrentUser() == null){
+                        // Chuyển sang LoginActivity
+                        Intent intent= new Intent(SplashActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                        SplashActivity.this.finish();
+                    }
+                }else {
+                    Intent intent= new Intent(SplashActivity.this,LoginActivity.class);
+                    startActivity(intent);
+                    SplashActivity.this.finish();
+                }
+            }
+        }, Splash_timeout);*/
 
         Animation myanimation= AnimationUtils.loadAnimation(SplashActivity.this,R.anim.animation);
         wel.startAnimation(myanimation);

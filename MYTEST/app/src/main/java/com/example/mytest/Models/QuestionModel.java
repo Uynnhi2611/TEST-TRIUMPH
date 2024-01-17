@@ -45,6 +45,10 @@ public class QuestionModel {
         this.isBookmarked = isBookmarked;
     }
 
+    public QuestionModel() {
+
+    }
+
     public String getqID() {
         return qID;
     }
@@ -156,6 +160,8 @@ public class QuestionModel {
     public void setImgD(String imgD) {
         this.imgD = imgD;
     }
+
+
 }
 /*    public QuestionModel(String qID, String question, String optionA, String optionB, String optionC, String optionD, int correctAns, int selectedAns, int status, boolean isBookmarked) {
         this.qID= qID;

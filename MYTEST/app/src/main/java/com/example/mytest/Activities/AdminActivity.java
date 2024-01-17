@@ -34,6 +34,15 @@ public class AdminActivity extends AppCompatActivity {
             }
         });
 
+        btnQuesList=findViewById(R.id.btnQuesList);
+        btnQuesList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(AdminActivity.this, QuesListActivity.class);
+                startActivity(intent);
+            }
+        });
+
         btnLogout=findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override

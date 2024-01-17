@@ -1,16 +1,11 @@
 package com.example.mytest.Fragments;
 
-import static com.example.mytest.DbQuery.findTest;
 import static com.example.mytest.DbQuery.g_testList;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.GridView;
@@ -18,7 +13,6 @@ import android.widget.GridView;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.mytest.Activities.MainActivity;
 import com.example.mytest.Adapters.CategoryAdapter;
@@ -27,7 +21,7 @@ import com.example.mytest.Models.TestModel;
 import com.example.mytest.R;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 
 public class CategoryFragment extends Fragment {

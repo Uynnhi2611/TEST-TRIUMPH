@@ -6,11 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,15 +23,18 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.SignInMethodQueryResult;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText name,email,pass,confirmPass;
-    private Spinner roleSpinner;
     private Button btnSignUp;
     private ImageView btnBack;
     private FirebaseAuth mAuth;
-    private String emailStr,passStr,confirmPassStr,nameStr,roleStr;
+    private String emailStr,passStr,confirmPassStr,nameStr;
     String emailPattern = "(?=.*[a-z])(?=.*[0-9])[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
     private Dialog progressDialog;
@@ -48,7 +49,6 @@ public class SignUpActivity extends AppCompatActivity {
         email=findViewById(R.id.emailID);
         pass=findViewById(R.id.password);
         confirmPass=findViewById(R.id.confirm_pass);
-     //   roleSpinner=findViewById(R.id.role_spinner);
         btnSignUp=findViewById(R.id.btnSignUp);
         btnBack=findViewById(R.id.btnBback);
         progressDialog=new Dialog(SignUpActivity.this);
@@ -66,17 +66,6 @@ public class SignUpActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-       /* roleSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                roleStr = parent.getItemAtPosition(position).toString();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // Xử lý trường hợp không có gì được chọn
-            }
-        });*/
 
         btnSignUp.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
@@ -125,10 +114,6 @@ public class SignUpActivity extends AppCompatActivity {
             Toast.makeText(SignUpActivity.this,"Password and confirm Password should be same!",Toast.LENGTH_SHORT).show();
             return false;
         }
-       /* if (roleStr == null || roleStr.isEmpty() || roleStr.equals("Select a role")) {
-            Toast.makeText(SignUpActivity.this,"Please select a role!",Toast.LENGTH_SHORT).show();
-            return false;
-        }*/
         return true;
     }
 
@@ -179,4 +164,119 @@ public class SignUpActivity extends AppCompatActivity {
                     }
                 });
     }
+
 }
+ /*  private void signupNewUser(){
+       progressDialog.show();
+       String inputEmail = emailStr.trim();
+       String inputPassword = passStr.trim();
+
+       // Kiểm tra xem tài khoản có tồn tại trong Firebase Authentication hay không
+       mAuth.fetchSignInMethodsForEmail(inputEmail)
+               .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+                   @Override
+                   public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+                       boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
+                       if (!isNewUser) {
+                           // Nếu tài khoản tồn tại trong Firebase Authentication, kiểm tra trong Firestore
+                           FirebaseFirestore db = FirebaseFirestore.getInstance();
+                           db.collection("USERS")
+                                   .get()
+                                   .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                       @Override
+                                       public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                           if (task.isSuccessful()) {
+                                               boolean userExists = false;
+                                               for (QueryDocumentSnapshot document : task.getResult()) {
+                                                   if (!document.getId().equals("TOTAL_USERS") && inputEmail.equals(document.getString("EMAIL_ID"))) {
+                                                       userExists = true;
+                                                       break;
+                                                   }
+                                               }
+                                               if (userExists) {
+                                                   // Nếu tài khoản tồn tại trong Firestore, hiển thị thông báo lỗi
+                                                   progressDialog.dismiss();
+                                                   Toast.makeText(SignUpActivity.this, "Account already exists.", Toast.LENGTH_SHORT).show();
+                                               } else {
+                                                   // Nếu tài khoản không tồn tại trong Firestore, tiếp tục tạo dữ liệu người dùng
+                                                   DbQuery.createUserData(inputEmail, nameStr, new MyCompleteListener(){
+                                                       @Override
+                                                       public void onSuccess() {
+                                                           DbQuery.loadData(new MyCompleteListener() {
+                                                               @Override
+                                                               public void onSuccess() {
+                                                                   progressDialog.dismiss();
+                                                                   Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                                                                   startActivity(intent);
+                                                                   finish();
+                                                               }
+
+                                                               @Override
+                                                               public void onFailure() {
+                                                                   progressDialog.dismiss();
+                                                                   Toast.makeText(SignUpActivity.this, "Something went wrong! Please try again.",
+                                                                           Toast.LENGTH_SHORT).show();
+                                                               }
+                                                           });
+                                                       }
+
+                                                       @Override
+                                                       public void onFailure() {
+                                                           Toast.makeText(SignUpActivity.this,"Something went wrong! Please try again later!",Toast.LENGTH_SHORT).show();
+                                                           progressDialog.dismiss();
+                                                       }
+                                                   });
+                                               }
+                                           } else {
+                                               // Xử lý lỗi khi truy vấn Firestore
+                                               progressDialog.dismiss();
+                                               Toast.makeText(SignUpActivity.this, "Error checking account existence: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                           }
+                                       }
+                                   });
+                       } else {
+                           // Nếu tài khoản không tồn tại trong Firebase Authentication, tiếp tục đăng ký
+                           mAuth.createUserWithEmailAndPassword(inputEmail, inputPassword)
+                                   .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
+                                       @Override
+                                       public void onComplete(@NonNull Task<AuthResult> task) {
+                                           if (task.isSuccessful()) {
+                                               Toast.makeText(SignUpActivity.this,"Sign Up Successful",Toast.LENGTH_SHORT).show();
+
+                                               DbQuery.createUserData(inputEmail, nameStr, new MyCompleteListener(){
+                                                   @Override
+                                                   public void onSuccess() {
+                                                       DbQuery.loadData(new MyCompleteListener() {
+                                                           @Override
+                                                           public void onSuccess() {
+                                                               progressDialog.dismiss();
+                                                               Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                                                               startActivity(intent);
+                                                               finish();
+                                                           }
+
+                                                           @Override
+                                                           public void onFailure() {
+                                                               progressDialog.dismiss();
+                                                               Toast.makeText(SignUpActivity.this, "Something went wrong! Please try again.",
+                                                                       Toast.LENGTH_SHORT).show();
+                                                           }
+                                                       });
+                                                   }
+
+                                                   @Override
+                                                   public void onFailure() {
+                                                       Toast.makeText(SignUpActivity.this,"Something went wrong! Please try again later!",Toast.LENGTH_SHORT).show();
+                                                       progressDialog.dismiss();
+                                                   }
+                                               });
+                                           } else {
+                                               progressDialog.dismiss();
+                                               Toast.makeText(SignUpActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                           }
+                                       }
+                                   });
+                       }
+                   }
+               });
+   }*/

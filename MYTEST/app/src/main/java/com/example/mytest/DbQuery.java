@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,6 +43,7 @@ public class DbQuery {
     public static int g_selected_cat_index = 0;
     public static List<TestModel> g_testList = new ArrayList<>();
     public static int g_selected_test_index = 0;
+    public static int g_selected_ques_index = 0;
     public static List<String> g_bmIdList = new ArrayList<>();
     public static List<QuestionModel> g_bookmarksList = new ArrayList<>();
     public static List<QuestionModel> g_quesList = new ArrayList<>();
@@ -56,6 +58,12 @@ public class DbQuery {
     public static final int REVIEW = 3;
     public static RankModel myPerformance = new RankModel("NULL", 0, -1);
     static int tmp;
+    public static final int PICK_IMAGE_REQUEST_Ques = 1;
+    public static final int PICK_IMAGE_REQUEST_A = 2;
+    public static final int PICK_IMAGE_REQUEST_B = 3;
+    public static final int PICK_IMAGE_REQUEST_C = 4;
+    public static final int PICK_IMAGE_REQUEST_D = 5;
+
     public static void createUserData(String email, String name, MyCompleteListener completeListener) {
         Map<String, Object> userData = new ArrayMap<>();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -164,32 +172,6 @@ public class DbQuery {
                     }
                 });
     }
-    public static void loginUser(String email, String password, final MyCompleteListener completeListener) {
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Kiểm tra xem người dùng có hoạt động không
-                            g_firestore.collection("USERS").document(task.getResult().getUser().getUid()).get()
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            if (documentSnapshot.getBoolean("isActive")) {
-                                                completeListener.onSuccess();
-                                            } else {
-                                                FirebaseAuth.getInstance().signOut();
-                                                completeListener.onFailure();
-                                            }
-                                        }
-                                    });
-                        } else {
-                            completeListener.onFailure();
-                        }
-                    }
-                });
-    }
-
     public static void deleteUser(String userId, MyCompleteListener completeListener) {
         g_firestore.collection("USERS").document(userId).delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -473,6 +455,76 @@ public class DbQuery {
                     }
                 });
     }
+    public static void addQuestion(QuestionModel newQuestion, MyCompleteListener completeListener) {
+        // Tạo một Map để lưu trữ dữ liệu của câu hỏi mới
+        Map<String, Object> questionData = new HashMap<>();
+        questionData.put("QUESTION", newQuestion.getQuestion());
+        questionData.put("A", newQuestion.getOptionA());
+        questionData.put("B", newQuestion.getOptionB());
+        questionData.put("C", newQuestion.getOptionC());
+        questionData.put("D", newQuestion.getOptionD());
+        questionData.put("IMGQUES", newQuestion.getImgQues());
+        questionData.put("IMGA", newQuestion.getImgA());
+        questionData.put("IMGB", newQuestion.getImgB());
+        questionData.put("IMGC", newQuestion.getImgC());
+        questionData.put("IMGD", newQuestion.getImgD());
+        questionData.put("ANSWER", newQuestion.getCorrectAns());
+        questionData.put("CATEGORY", g_catList.get(g_selected_cat_index).getDocID());
+        questionData.put("TEST", g_testList.get(g_selected_test_index).getTestID());
+        
+
+        // Thêm câu hỏi mới vào Firestore
+        g_firestore.collection("Questions")
+                .add(questionData)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        // Cập nhật ID của câu hỏi mới
+                        newQuestion.setqID(documentReference.getId());
+
+                        // Thêm câu hỏi mới vào danh sách câu hỏi
+                        g_quesList.add(newQuestion);
+
+                        // Gọi phương thức onSuccess của completeListener
+                        completeListener.onSuccess();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Gọi phương thức onFailure của completeListener
+                        completeListener.onFailure();
+                    }
+                });
+    }
+
+    public static void deleteQuestion(String questionId, MyCompleteListener completeListener) {
+        g_firestore.collection("Questions")
+                .document(questionId)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Xóa câu hỏi khỏi danh sách câu hỏi
+                        for (int i = 0; i < g_quesList.size(); i++) {
+                            if (g_quesList.get(i).getqID().equals(questionId)) {
+                                g_quesList.remove(i);
+                                break;
+                            }
+                        }
+                        // Gọi phương thức onSuccess của completeListener
+                        completeListener.onSuccess();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Gọi phương thức onFailure của completeListener
+                        completeListener.onFailure();
+                    }
+                });
+    }
+
     public static void loadTestData(MyCompleteListener completeListener) {
        g_testList.clear();
        String catDocID = g_catList.get(g_selected_cat_index).getDocID();

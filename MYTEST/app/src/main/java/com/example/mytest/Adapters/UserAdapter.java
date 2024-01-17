@@ -57,7 +57,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public int getItemCount() {
         return userList.size();
     }
-
     public class UserViewHolder extends RecyclerView.ViewHolder {
         TextView stt, tenNguoiDung, email, sdt, ngayTao;
         ImageView deleteButton;

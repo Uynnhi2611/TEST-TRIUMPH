@@ -11,10 +11,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.example.mytest.Activities.ManageQuesActivity;
 import com.example.mytest.Activities.StartTestActivity;
 import com.example.mytest.DbQuery;
 import com.example.mytest.Models.TestModel;
 import com.example.mytest.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -61,7 +64,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.ViewHolder> {
             topScore.setText(String.valueOf(progress)+"%");
             progressBar.setProgress(progress);
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+           /* itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     DbQuery.g_selected_test_index = pos;
@@ -69,7 +72,29 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.ViewHolder> {
                     Intent intent = new Intent(view.getContext(), StartTestActivity.class);
                     view.getContext().startActivity(intent);
                 }
+            });*/
+            String adminEmail = "admin123@gmail.com"; // Email của admin
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            String currentUserEmail = user.getEmail();
+
+
+            boolean isAdmin = currentUserEmail.equals(adminEmail); // Kiểm tra nếu người dùng hiện tại là admin
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DbQuery.g_selected_test_index = pos;
+
+                    Intent intent;
+                    if (isAdmin) { // Kiểm tra nếu người dùng là admin
+                        intent = new Intent(view.getContext(), ManageQuesActivity.class);
+                    } else {
+                        intent = new Intent(view.getContext(), StartTestActivity.class);
+                    }
+                    view.getContext().startActivity(intent);
+                }
             });
+
         }
 
     }

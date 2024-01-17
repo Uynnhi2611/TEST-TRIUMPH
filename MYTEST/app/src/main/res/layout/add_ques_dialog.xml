@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/ll1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:paddingBottom="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/etQuestion"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:hint="Questions"
+            android:textStyle="bold"
+            android:scrollbars="vertical"
+            android:background="@android:color/white"
+            android:inputType="textMultiLine"
+            android:elevation="5dp"
+            android:translationZ="3dp"
+            />
+
+        <ImageView
+            android:id="@+id/imgQues"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:src="@drawable/add"
+            android:scaleType="fitCenter"/>
+
+    </LinearLayout>
+
+    <GridLayout
+        android:id="@+id/gridLayout"
+        android:layout_width="399dp"
+        android:layout_height="349dp"
+        android:alignmentMode="alignBounds"
+        android:columnCount="2"
+        android:padding="16dp"
+        android:rowCount="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ll1">
+
+        <!-- Option A -->
+        <LinearLayout
+            android:id="@+id/optionA"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1"
+            android:layout_margin="10dp"
+            android:background="@drawable/unselected_btn"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imgA"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/add" />
+
+            <EditText
+                android:id="@+id/etA"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:inputType="textMultiLine"
+                android:scrollbars="vertical"
+                android:stateListAnimator="@null"
+                android:hint="option A"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:translationZ="3dp"
+
+                />
+        </LinearLayout>
+
+        <!-- Option B -->
+
+        <LinearLayout
+            android:id="@+id/optionB"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="10dp"
+            android:background="@drawable/unselected_btn"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imgB"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/add" />
+
+            <EditText
+                android:id="@+id/etB"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:inputType="textMultiLine"
+                android:scrollbars="vertical"
+                android:stateListAnimator="@null"
+                android:hint="option B"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:translationZ="3dp" />
+        </LinearLayout>
+
+        <!-- Option C -->
+        <LinearLayout
+            android:id="@+id/optionC"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="10dp"
+            android:background="@drawable/unselected_btn"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imgC"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/add" />
+
+            <EditText
+                android:id="@+id/etC"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:inputType="textMultiLine"
+                android:scrollbars="vertical"
+                android:stateListAnimator="@null"
+                android:hint="option C"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:translationZ="3dp" />
+        </LinearLayout>
+        <!-- Option D -->
+        <LinearLayout
+            android:id="@+id/optionD"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="10dp"
+            android:background="@drawable/unselected_btn"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imgD"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:src="@drawable/add" />
+
+            <EditText
+                android:id="@+id/etD"
+                android:layout_width="120dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:elevation="3dp"
+                android:gravity="center"
+                android:inputType="textMultiLine"
+                android:scrollbars="vertical"
+                android:stateListAnimator="@null"
+                android:hint="option D"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:translationZ="3dp" />
+        </LinearLayout>
+
+    </GridLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gridLayout">
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Correct Answer Index: "
+            android:id="@+id/correctAns"/>
+
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

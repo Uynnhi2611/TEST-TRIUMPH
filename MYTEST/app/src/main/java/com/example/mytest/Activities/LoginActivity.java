@@ -31,6 +31,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -109,45 +112,66 @@ public class LoginActivity extends AppCompatActivity {
         }
         return true;
     }
-    private void login(){
-        progressDialog.show();
-        String inputEmail = email.getText().toString().trim();
-        mAuth.signInWithEmailAndPassword(inputEmail, pass.getText().toString().trim())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
 
-                            DbQuery.loadData(new MyCompleteListener() {
-                                @Override
-                                public void onSuccess() {
-                                    progressDialog.dismiss();
-                                    Intent intent;
-                                    if(inputEmail.equals("admin123@gmail.com")) {
-                                        intent = new Intent(LoginActivity.this, AdminActivity.class);
-                                    } else {
-                                        intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    }
-                                    startActivity(intent);
-                                    finish();
-                                }
+ private void login(){
+     progressDialog.show();
+     String inputEmail = email.getText().toString().trim();
+     String inputPassword = pass.getText().toString().trim();
 
-                                @Override
-                                public void onFailure() {
-                                    progressDialog.dismiss();
-                                    Toast.makeText(LoginActivity.this, "Something went wrong! Please try again.",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            });
+     // Kiểm tra xem tài khoản có tồn tại trong Firestore hay không
+     FirebaseFirestore db = FirebaseFirestore.getInstance();
+     db.collection("USERS").whereEqualTo("EMAIL_ID", inputEmail)
+             .get()
+             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                 @Override
+                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                     if (task.isSuccessful()) {
+                         if (!task.getResult().isEmpty()) {
+                             // Nếu tài khoản tồn tại, tiếp tục đăng nhập
+                             mAuth.signInWithEmailAndPassword(inputEmail, inputPassword)
+                                     .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                                         @Override
+                                         public void onComplete(@NonNull Task<AuthResult> task) {
+                                             if (task.isSuccessful()) {
+                                                 Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
 
-                        } else {
-                            progressDialog.dismiss();
-                            Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
+                                                 DbQuery.loadData(new MyCompleteListener() {
+                                                     @Override
+                                                     public void onSuccess() {
+                                                         progressDialog.dismiss();
+                                                         Intent intent;
+                                                         if (inputEmail.equals("admin123@gmail.com")) {
+                                                             intent = new Intent(LoginActivity.this, AdminActivity.class);
+                                                         } else {
+                                                             intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                         }
+                                                         startActivity(intent);
+                                                         finish();
+                                                     }
+
+                                                     @Override
+                                                     public void onFailure() {
+                                                         progressDialog.dismiss();
+                                                         Toast.makeText(LoginActivity.this, "Something went wrong! Please try again.",
+                                                                 Toast.LENGTH_SHORT).show();
+                                                     }
+                                                 });
+                                             }
+                                         }
+                             });
+                         } else {
+                             // Nếu tài khoản không tồn tại, hiển thị thông báo lỗi
+                             progressDialog.dismiss();
+                             Toast.makeText(LoginActivity.this, "Account does not exist.", Toast.LENGTH_SHORT).show();
+                         }
+                     } else {
+                         // Xử lý lỗi khi truy vấn Firestore
+                         progressDialog.dismiss();
+                         Toast.makeText(LoginActivity.this, "Error checking account existence: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                     }
+                 }
+             });
+ }
 
     private void googleSignIn(){
         Intent signInIntent=mGoogleSignInClient.getSignInIntent();
@@ -239,3 +263,42 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 }
+/*   private void login(){
+        progressDialog.show();
+        String inputEmail = email.getText().toString().trim();
+        mAuth.signInWithEmailAndPassword(inputEmail, pass.getText().toString().trim())
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
+
+                            DbQuery.loadData(new MyCompleteListener() {
+                                @Override
+                                public void onSuccess() {
+                                    progressDialog.dismiss();
+                                    Intent intent;
+                                    if(inputEmail.equals("admin123@gmail.com")) {
+                                        intent = new Intent(LoginActivity.this, AdminActivity.class);
+                                    } else {
+                                        intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    }
+                                    startActivity(intent);
+                                    finish();
+                                }
+
+                                @Override
+                                public void onFailure() {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(LoginActivity.this, "Something went wrong! Please try again.",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        } else {
+                            progressDialog.dismiss();
+                            Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }*/
